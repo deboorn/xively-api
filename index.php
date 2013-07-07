@@ -30,6 +30,11 @@
 	die();
 	*/
 	
+	# example - forge factory is chainable for one time use
+	/*
+	 $r = \Xively\Api::forge()->feeds()->list()->get();
+	 */	
+	
 	# example - xml get feeds
 	/*
 	$xml = $xi->xml()->feeds()->list()->get();
