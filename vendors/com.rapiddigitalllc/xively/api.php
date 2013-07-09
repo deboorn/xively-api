@@ -24,7 +24,7 @@ require_once('exception.php');
 class API{
 	
 
-	public $debug = true;
+	public $debug = false;//enable to view chaining process in action
 	public $paths;
 	public $contentType = 'json';
 
