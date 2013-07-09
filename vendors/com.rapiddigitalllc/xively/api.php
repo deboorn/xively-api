@@ -39,9 +39,8 @@ class API{
 	
 	/**
 	 * construct
-	 * @param $key
+	 * @param string $key
 	 * @return void
-	 * @throws \Exception
 	 */
 	public function __construct($key=null){
 		$this->settings['apiKey'] = !empty($key) ? $key : $this->settings['apiKey'];
@@ -50,8 +49,8 @@ class API{
 	
 	/**
 	 * forge factory
-	 * @param $key
-	 * @return void
+	 * @param string $key
+	 * @return $this
 	 */
 	public static function forge($key=null){
 		$self = new self($key);
@@ -60,6 +59,7 @@ class API{
 	
 	/**
 	 * deboug output
+	 * @param mixed $obj
 	 * @return void
 	 */
 	public function d($obj){
@@ -98,6 +98,7 @@ class API{
 	
 	/**
 	 * set content type to xml
+	 * @return $this
 	 */
 	public function xml(){
 		$this->contentType = 'xml';
@@ -106,6 +107,7 @@ class API{
 	
 	/**
 	 * set content type to json
+	 * @return $this
 	 */
 	public function json(){
 		$this->contentType = 'json';
@@ -114,6 +116,7 @@ class API{
 	
 	/**
 	 * set content type to csv
+	 * @return $this
 	 */
 	public function csv(){
 		$this->contentType = 'csv';
@@ -126,7 +129,7 @@ class API{
 	 * @param string $path
 	 * @param array $ids
 	 * @return string
-	 * @throws \Exception
+	 * @throws \Xively\Exception
 	 */
 	protected function parsePath($path, $ids){
 		$parts = explode("/",ltrim($path,'/'));
@@ -146,7 +149,8 @@ class API{
 	 * @param string $verb
 	 * @param string $path
 	 * @param mixed $params
-	 * @return array $result
+	 * @return array $result = [response, http code]
+	 * @throws \Xively\Exception
 	 */
 	protected function fetch($verb, $path, $params){
 		
@@ -188,6 +192,7 @@ class API{
 	 * @param string $path
 	 * @param array $ids=null
 	 * @param mixed $params=null
+	 * @return $this
 	 */
 	public function invoke($id, $verb, $path, $ids=null, $params=null){
 		$path = $this->parsePath($path, $ids);
@@ -204,7 +209,7 @@ class API{
 	 * @return object|boolean
 	 */
 	public function get(){
-		if(empty($this->response) && empty($this->code)) throw new Exception('Nothing to get. Please trigger resource first');
+		if(empty($this->response) && empty($this->code)) throw new Exception('Nothing to Get. Trigger API Resource First.');
 		$r = $this->contentType == "json" ? json_decode($this->response) : $this->response;
 		$r = !$r && $this->code == 200 ? true : $r;
 		unset($this->response, $this->code);
