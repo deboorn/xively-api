@@ -1,35 +1,75 @@
 <?php namespace Xively;
 
 /**
- * Xively API Client
+ * Class API - Xively API Client
  *
- * Class uses a JSON api_path.js file that defines the API resources (endpoints and paths)
+ * Simple API consumer class for Xively Api using method chaining with PHP magic function.
+ * Api endpoints are defined in api_paths.json file. Please submit updates to this file in
+ * the event the endpoints are added/removed/changed, etc.
  *
- * @author Daniel Boorn - daniel.boorn@gmail.com
+ * @package Xively
+ * @author Daniel Boorn <daniel.boorn@gmail.com>
  * @copyright Daniel Boorn
  * @license Creative Commons Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0)
  */
 class API
 {
 
-    //enable to view chaining process in action
+    /**
+     * Enable this to output log of chain events and resource call
+     *
+     * @var bool
+     */
     public $debug = false;
+
+    /**
+     * Stores API endpoint paths
+     *
+     * @var
+     */
     public $paths;
+
+    /**
+     * Current content type (json/xml/csv)
+     *
+     * @var string
+     */
     public $contentType = 'json';
 
+    /**
+     * @var array
+     */
     protected $pathIds = array();
+
+    /**
+     * @var
+     */
     protected $endpointId;
+
+    /**
+     * @var
+     */
     protected $response;
+
+    /**
+     * @var
+     */
     protected $code;
+
+    /**
+     * Api key can be supplied in construct.
+     *
+     * @var array
+     */
     protected $settings = array(
         'apiKey'  => 'your api key',
         'baseUrl' => 'https://api.xively.com/v2',
     );
 
     /**
-     * construct
-     * @param string $key
-     * @return void
+     * Create new Xively consumer with project Apiåå
+     *
+     * @param null $key Xively api key
      */
     public function __construct($key = null)
     {
@@ -38,9 +78,9 @@ class API
     }
 
     /**
-     * deboug output
-     * @param mixed $obj
-     * @return void
+     * Debug output
+     *
+     * @param $obj
      */
     public function d($obj)
     {
@@ -48,10 +88,11 @@ class API
     }
 
     /**
-     * magic method for building chainable api path with trigger to invoke api method
-     * @param string $name
-     * @param array $args
-     * @return $this
+     * Magic method to enable method chaining to api paths
+     *
+     * @param $name
+     * @param $args
+     * @return $this|API
      */
     public function __call($name, $args)
     {
@@ -70,8 +111,7 @@ class API
     }
 
     /**
-     * clear properties used by chain requests
-     * @return void
+     * Reset api endpoint chain
      */
     public function reset()
     {
@@ -80,7 +120,8 @@ class API
     }
 
     /**
-     * set content type to xml
+     * Change content type to xml
+     *
      * @return $this
      */
     public function xml()
@@ -90,7 +131,8 @@ class API
     }
 
     /**
-     * set content type to json
+     * Change content type to json
+     *
      * @return $this
      */
     public function json()
@@ -100,7 +142,8 @@ class API
     }
 
     /**
-     * set content type to csv
+     * Change content type to csv
+     *
      * @return $this
      */
     public function csv()
@@ -111,11 +154,12 @@ class API
 
 
     /**
-     * returns parsed path with ids (if any)
-     * @param string $path
-     * @param array $ids
+     * Parse chained api path with path ids
+     *
+     * @param $path
+     * @param $ids
      * @return string
-     * @throws \Xively\Exception
+     * @throws Exception
      */
     protected function parsePath($path, $ids)
     {
@@ -123,7 +167,7 @@ class API
         for ($i = 0; $i < count($parts); $i++) {
             if (empty($parts[$i])) continue;
             if ($parts[$i]{0} == "{") {
-                if (count($ids) == 0) throw new Exception("Api Endpont Path is Missing 1 or More IDs [path={$path}].");
+                if (count($ids) == 0) throw new Exception("Api Endpoint Path is Missing 1 or More IDs [path={$path}].");
                 $parts[$i] = array_shift($ids);
             }
         }
@@ -132,12 +176,13 @@ class API
 
 
     /**
-     * fetch request form api
-     * @param string $verb
-     * @param string $path
-     * @param mixed $params
-     * @return array $result = [response, http code]
-     * @throws \Xively\Exception
+     * Fetch endpoint resource from Api
+     *
+     * @param $verb
+     * @param $path
+     * @param $params
+     * @return array
+     * @throws Exception
      */
     protected function fetch($verb, $path, $params)
     {
@@ -174,13 +219,15 @@ class API
     }
 
     /**
-     * invoke api endpoint method
-     * @param string $id
-     * @param string $verb
-     * @param string $path
-     * @param array $ids =null
-     * @param mixed $params =null
+     * Invoke (consume) api endpoint. Called when api endpoint chain is completed.
+     *
+     * @param $id
+     * @param $verb
+     * @param $path
+     * @param null $ids
+     * @param null $params
      * @return $this
+     * @throws Exception
      */
     public function invoke($id, $verb, $path, $ids = null, $params = null)
     {
@@ -194,8 +241,10 @@ class API
     }
 
     /**
-     * return api response
-     * @return object|boolean
+     * Gets api response (and last response) from api chain
+     *
+     * @return bool|mixed
+     * @throws Exception
      */
     public function get()
     {
@@ -207,8 +256,7 @@ class API
     }
 
     /**
-     * loads api paths list from json file
-     * @return void
+     * Load api paths from local JSON file
      */
     protected function loadApiPaths()
     {
